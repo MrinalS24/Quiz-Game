@@ -53,6 +53,10 @@ def draw():
     screen.draw.textbox(marquee_message, marquee_box, color = "white")
 
     screen.draw.textbox(question[0].strip(), question_box, color = "black")
+    b = 1
+    for a in answers_boxes:
+        screen.draw.textbox(question[b].strip(), a, color = 'white')
+        b += 1
 
 
 def marquee_effect():
@@ -63,6 +67,7 @@ def marquee_effect():
 
 def update():
     marquee_effect()
+
 
 
 
@@ -80,7 +85,49 @@ def read_question():
     question_option = questions.pop(0).split(",")
     return(question_option)
 
+def on_mouse_down(pos):
+    index = 1 
+    for j in answers_boxes:
+        if j.collidepoint(pos):
+            if index is int(question[5]):
+                correct_answer()
+            else:
+                game_end()
+        index += 1
+    if skip_box.collidepoint(pos):
+        skip_question()
 
+
+def skip_question():
+    global question, time_left
+    if questions and not game_over:
+        question = read_question()
+        time_left = 10
+    else:
+        game_end()
+
+def game_end():
+    global question, time_left, game_over
+    message = f"GAME OVER \n Your final score is {score}"
+    question = [message, "-", "-", "-", "-", 5]
+    time_left = 0
+    game_over = True
+
+def correct_answer():
+    global score, question, time_left
+    score  += 1
+    if questions:
+        question = read_question()
+        time_left = 10
+    else:
+        game_end()
+
+def update_timer():
+    global time_left
+    if time_left:
+        time_left -= 1
+    else:
+        game_end()
 
 
 
@@ -109,7 +156,7 @@ question = read_question()
 
 
 
-
+clock.schedule_interval(update_timer, 1)
 
 
 
